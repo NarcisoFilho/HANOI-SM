@@ -1,0 +1,13 @@
+out
+
+push 1
+out
+    
+push 4
+out
+    
+add
+out
+    
+push $R
+out
