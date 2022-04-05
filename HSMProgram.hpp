@@ -33,7 +33,7 @@ class HSMProgram{
 
 HSMProgram::HSMProgram(){
     file_name = "Unsaved";
-    qtd_lines = static_cast<float>( EDITOR_REC.height ) / EDITOR_TEXT_LINE_HEIGHT;
+    qtd_lines = static_cast<int>( static_cast<float>( EDITOR_REC.height ) / EDITOR_TEXT_LINE_HEIGHT );
 
     // Allocation enough space to program
     program = new string[ qtd_lines ];

@@ -29,7 +29,7 @@ int main(){
     
     // Stack Machine
     HSM<int> hsm;
-    HSMProgram *prog = NULL;
+    HSMProgram *prog = new HSMProgram;
  
     while( !WindowShouldClose() ){
         UpdateMouseCursor();
