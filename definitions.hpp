@@ -21,10 +21,10 @@
 #define BUTTON_PLAY_COLOR DARKGREEN
 
 // NAME COLECTOR BOX
-#define NAME_COLECTOR_BOX_EXTERN_COLOR GREEN
-#define NAME_COLECTOR_BOX_INTERN_COLOR LIGHTGRAY
-#define NAME_COLECTOR_BOX_THICK 7
-#define NAME_COLECTOR_BOX_WIDTH ( WINDOW_WIDTH / 4 )
+#define NAME_COLECTOR_BOX_EXTERN_COLOR GOLD
+#define NAME_COLECTOR_BOX_INTERN_COLOR RAYWHITE
+#define NAME_COLECTOR_BOX_THICK 4
+#define NAME_COLECTOR_BOX_WIDTH ( .7 * WINDOW_WIDTH )
 #define NAME_COLECTOR_BOX_HEIGHT ( WINDOW_HEIGHT / 10 )
 
 #define NAME_COLECTOR_BOX (Rectangle){                          \
@@ -32,6 +32,15 @@
             (WINDOW_HEIGHT - NAME_COLECTOR_BOX_HEIGHT) / 2,     \
             NAME_COLECTOR_BOX_WIDTH,                            \
             NAME_COLECTOR_BOX_HEIGHT                            \
+        } 
+
+
+#define NAME_COLECTOR_BOX_BG_COLOR CLITERAL(Color){ 120 ,120 ,120 , 45}
+#define NAME_COLECTOR_BOX_BG (Rectangle){                          \
+            (WINDOW_WIDTH - 1.2 * NAME_COLECTOR_BOX_WIDTH) / 2 ,      \
+            (WINDOW_HEIGHT - 6 * NAME_COLECTOR_BOX_HEIGHT) / 2,     \
+            1.2 * NAME_COLECTOR_BOX_WIDTH,                            \
+            6 * NAME_COLECTOR_BOX_HEIGHT                            \
         } 
 
 // FILE SELECTION BOX
@@ -83,6 +92,9 @@
 #define STACK_REC_X ( WINDOW_WIDTH - STACK_REC_WIDTH - STACK_MARGEM )
 
 // GENERAL
+
+// FILES
+#define FOLDER_DEFAULT_SAVES "./saves/"
 
 // CORRECTION
 #define DEFAULT_FONT_HEIGHT_ERROR_CORRECTION_FACTOR (27 / 10.0f)

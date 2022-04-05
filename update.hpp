@@ -7,17 +7,17 @@ using namespace std;
 #include "definitions.hpp"
 #include "HSMProgram.hpp"
 
-
+template <typename FUNC_T , typename ARG_T >
 class BUTTON{
     Rectangle pos;
     Rectangle pos_default;
     Color cor;
     std::string title;
     bool flag_selected;
-    void (*function)( HSMProgram** );
+    FUNC_T (*function)( ARG_T );
 
     public:
-    BUTTON( Rectangle rec , Color cor , string name , void (*func)( HSMProgram** ) ){
+    BUTTON( Rectangle rec , Color cor , string name , FUNC_T (*func)( ARG_T ) ){
         this->pos_default = rec;
         this->pos = rec;
         this->cor = cor;
@@ -27,7 +27,7 @@ class BUTTON{
         this->function = func;
     }
 
-    void call( HSMProgram** arg_prog ){ this->function( arg_prog ); }
+    void call( ARG_T arg_prog ){ this->function( arg_prog ); }
 
     Rectangle get_pos_default(){ return pos_default; }
     Rectangle getpos(){ return pos; }
@@ -48,8 +48,8 @@ class BUTTON{
 
 
 
-
-void UpdateButton( BUTTON &button , HSMProgram **prog ){
+template <typename FUNC_T , typename ARG_T >
+void UpdateButton( BUTTON<FUNC_T,ARG_T> &button , ARG_T prog ){
 
     if( CheckCollisionPointRec( GetMousePosition() ,  button.getpos() ) ){
         button.set_flag_selected( true );
@@ -66,7 +66,9 @@ void UpdateButton( BUTTON &button , HSMProgram **prog ){
     }
 
 }
-void UpdateButton_Circle( BUTTON &button , HSMProgram **prog ){
+
+template <typename FUNC_T , typename ARG_T >
+void UpdateButton_Circle( BUTTON<FUNC_T,ARG_T> &button , HSMProgram **prog ){
 
     if( CheckCollisionPointCircle( GetMousePosition() , (Vector2){button.getpos().x , button.getpos().y} , button.getpos().width  ) ){
         button.set_flag_selected( true );

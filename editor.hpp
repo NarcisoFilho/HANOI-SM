@@ -41,8 +41,6 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         if( IsKeyPressed( KEY_LEFT ) )
             current_col--;
 
-    cout << "cursor( " << current_col << " , " << current_lin << " )" << endl;
-
 }
 
 void EDITOR::print_editor_content( HSMProgram &prog ){
