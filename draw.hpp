@@ -66,6 +66,8 @@ void DrawArrowPlay(){
 
 void DrawStackStructure( int begin , bool f_up , bool f_down ){
     int last = begin + STACK_QTD_PAG - 1;
+    Color cor_up  = CheckCollisionPointRec( GetMousePosition() , STACK_LAST_FIELD_REC ) ? GOLD : RAYWHITE;
+    Color cor_down  = CheckCollisionPointRec( GetMousePosition() , STACK_FIRST_FIELD_REC ) ? GOLD : RAYWHITE;
 
     for( int n = begin ; n <= last ; n++ ){
         DrawRectangle( 
@@ -73,7 +75,7 @@ void DrawStackStructure( int begin , bool f_up , bool f_down ){
             WINDOW_HEIGHT - STACK_MARGEM - STACK_REC_HEIGHT * ( n - begin + 1 ),
             STACK_REC_WIDTH,
             STACK_REC_HEIGHT,
-            (n == last && n < 127 || n == begin && begin > 0 ) ? RAYWHITE : STACK_FIELD_BG_COLOR
+            (n == last && n < 127 ) ? cor_up :  (n == begin && begin > 0 ? cor_down : STACK_FIELD_BG_COLOR )
         );
         DrawRectangleLines( 
             STACK_REC_X,

@@ -102,11 +102,13 @@ void UpdateStack( int &sfv , bool &f_u , bool &f_d ){
 
     if( !delay ){
         if( sfv < 127 - STACK_QTD_PAG )
-            if( IsKeyDown( KEY_F2 ) )
+            if( IsKeyDown( KEY_F2 )
+            || (CheckCollisionPointRec( GetMousePosition() , STACK_LAST_FIELD_REC ) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) ) )
                 sfv++, f_u = delay = true;
         
         if( sfv > 0 )
-            if( IsKeyDown( KEY_F3 ) )
+            if( IsKeyDown( KEY_F3 )
+            || (CheckCollisionPointRec( GetMousePosition() , STACK_FIRST_FIELD_REC ) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON) ) )
                 sfv-- , f_d = delay = true;
     }else
         delay = false;

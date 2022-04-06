@@ -28,6 +28,8 @@ class HSMProgram{
 
     void print();
     friend int count_file_lines( fstream& );
+    void insert_char_prog_line( char ch , int col , int lin );
+    void remove_char_prog_line( int col , int lin );
 };
 
 
@@ -37,6 +39,8 @@ HSMProgram::HSMProgram(){
 
     // Allocation enough space to program
     program = new string[ qtd_lines ];
+    for( int k = 0 ; k < qtd_lines ; k++ )
+        program[ k ] = "k";
 }
 
 HSMProgram::HSMProgram( string file_name ){
@@ -96,6 +100,14 @@ string HSMProgram::get_program_line( int line ){
         return s_nop;
 }
 
+void HSMProgram::insert_char_prog_line( char ch , int col , int lin ){
+    // if( col >= 0 && col < program[ lin ].length() )   
+        program[ lin ].insert( program[ lin ].begin() + col , ch );
+}
+
+void HSMProgram::remove_char_prog_line( int col , int lin ){
+        program[ lin ].erase( col , 1 );   
+}
 
 
 
