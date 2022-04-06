@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <typeinfo>
+#include <ctime>
 #include "HSMProgram.hpp"
 #include "utils.hpp"
 using namespace std;
@@ -22,6 +23,11 @@ class HSM{
     int tos;        // Top of the stack
     int height;     // Stack's height ( Number of Elements )
     long long int size;       // Stack's size in Bytes
+    
+    public:
+    bool flag_execution;
+    int line_execution;
+    bool delay_execution;
 
     public:
     // Constructor + Destructor
@@ -52,12 +58,17 @@ class HSM{
     // Others
     void nop(){}
     void reset();
-    int run( HSMProgram );
+    int run( HSMProgram* );
 
     // Just for draw and debuging
     T get( int n ){ return stack[ n ]; }
     int get_tos(){ return tos; }
     int get_height(){ return height; }
+
+
+    // Execution
+    int step( HSMProgram* );
+    void stop_error();
 
 };
 
@@ -169,8 +180,85 @@ void HSM<T>::reset(){
     // Clear Stack Memory
     for( int i = 0 ; i < height ; i++ )
         stack[ i ] = 0;
+
+    flag_execution = false;
+    line_execution = -1;
+    delay_execution = false;
+
 }
 
+template<typename T>
+int HSM<T>::step( HSMProgram *prog ){
+    string str;
+    T value;
+    int pos;
+    int flag_push_who_v;
+    int flag_blank_line;
+
+    if( line_execution < prog->get_qtd_lines() - 1 ){
+        line_execution++;
+        str = prog->get_program_line( line_execution );
+        flag_blank_line = true;
+        for( int k = 0 ; k < str.size() ; k++ )
+            if( str[ k ] != ' ' && str[ k ] != '\n' && str[ k ] != '\r' && str[ k ] != '\b'&& str[ k ] != '\t' ){
+                flag_blank_line = false;
+                break;
+            }
+            
+        if(!flag_blank_line ){
+            if( contain( str , "out" ) )          
+                this->out();
+            else if( contain( str , "add" ) )     
+                this->add();
+            else if( contain( str , "sub" ) )     
+                this->sub();
+            else if( contain( str , "mul" ) )     
+                this->mul();
+            else if( contain( str , "div" ) )     
+                this->div();
+            else if( contain( str , "mod" ) )     
+                this->mod();
+            else if( contain( str , "NOT" ) )     
+                this->NOT();
+            else if( contain( str , "OR" ) )     
+                this->OR();
+            else if( contain( str , "AND" ) )     
+                this->AND();
+            else if( contain( str , "MIR" ) )     
+                this->MIR();
+            else if( contain( str , "pop" ) )     
+                this->pop();        
+            else if( contain( str , "push" ) ){
+                pos = str.find( "push" );
+                flag_push_who_v = true;
+
+                for( int k = pos + 4 ; k < str.size() ; k++ )
+                    if( str[ k ] != ' ' && str[ k ] != '\n'  )
+                        flag_push_who_v = false;
+
+                if( contain( str , "$R" )
+                || flag_push_who_v )
+                    this->push();
+                else{
+                    value = stoi( str.substr( pos + 4 ) );
+                    this->push( value );
+                }
+            }else 
+                return 0;
+        }
+    }else{
+        flag_execution = 0;
+        line_execution = -1;
+    }
+
+
+    return 1;
+}
+
+template<typename T>
+void HSM<T>::stop_error(){
+    flag_execution = false;
+}
 
 /** run: Interpret the program
  * @brief 
@@ -179,69 +267,20 @@ void HSM<T>::reset(){
  */
 
 template<typename T>
-int HSM<T>::run( HSMProgram prog ){
-    string str;
-    int i = 0;
-    T value;
-    int pos;
-    int flag_push_who_v;
-    int flag_blank_line;
+int HSM<T>::run( HSMProgram *prog ){
+    int retorno = -1;
+    static clock_t time_last_line = -DELAY_EXECUTION;  // Time in miliseconds 
 
-    while( i < prog.get_qtd_lines() ){
-        str = prog.get_program_line( i );
-        
-        flag_blank_line = true;
-        for( int k = 0 ; k < str.size() ; k++ )
-            if( str[ k ] != ' ' && str[ k ] != '\n' ){
-                flag_blank_line = false;
-                break;
-            }
+    if( (1000.0 * clock()) / CLOCKS_PER_SEC - time_last_line >= DELAY_EXECUTION ){
+        retorno = step( prog );
 
-        if( contain( str , "out" ) )          
-            this->out();
-        else if( contain( str , "add" ) )     
-            this->add();
-        else if( contain( str , "sub" ) )     
-            this->sub();
-        else if( contain( str , "mul" ) )     
-            this->mul();
-        else if( contain( str , "div" ) )     
-            this->div();
-        else if( contain( str , "mod" ) )     
-            this->mod();
-        else if( contain( str , "NOT" ) )     
-            this->NOT();
-        else if( contain( str , "OR" ) )     
-            this->OR();
-        else if( contain( str , "AND" ) )     
-            this->AND();
-        else if( contain( str , "MIR" ) )     
-            this->MIR();
-        else if( contain( str , "pop" ) )     
-            this->pop();
-        
-        else if( contain( str , "push" ) ){
-            pos = str.find( "push" );
-            flag_push_who_v = true;
+        if( !retorno )
+            stop_error();
 
-            for( int k = pos + 4 ; k < str.size() ; k++ )
-                if( str[ k ] != ' ' && str[ k ] != '\n'  )
-                    flag_push_who_v = false;
-
-            if( contain( str , "$R" )
-            || flag_push_who_v )
-                this->push();
-            else{
-                value = stoi( str.substr( pos + 4 ) );
-                this->push( value );
-            }
-        }else if( !flag_blank_line ) 
-            return 0;
-
-        i++;
+        time_last_line = (1000.0 * clock()) / CLOCKS_PER_SEC;
     }
 
-    return 1;
+    return retorno;
 }
 
 

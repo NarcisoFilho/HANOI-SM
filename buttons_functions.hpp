@@ -197,5 +197,11 @@ void save_function( HSMProgram *prog ){
 
 }
 
+template< typename T>
+void play_function( HSMProgram *prog , HSM<T> *machine ){
+    machine->line_execution = -1;
+    machine->flag_execution = true;
+}
+
 
 #endif   // __BUTTONS_FUNCTIONS_HPP_

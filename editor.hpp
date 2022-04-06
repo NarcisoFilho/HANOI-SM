@@ -65,7 +65,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
         || inst == "ifz"
         || inst == "ifnz" )
             color = EDITOR_HIGHLIGHT_CONTROL_INSTRUCTION;
-        else if( inst == "OUT" )
+        else if( inst == "out" )
             color = EDITOR_HIGHLIGHT_IO_INSTRUCTION;
         
         if( !contain( inst , "push" ) )

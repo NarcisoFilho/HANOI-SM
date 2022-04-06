@@ -7,7 +7,7 @@ using namespace std;
 #include "definitions.hpp"
 #include "HSMProgram.hpp"
 
-template <typename FUNC_T , typename ARG_T >
+template <typename FUNC_T , typename ARG_T , typename T >
 class BUTTON{
     Rectangle pos;
     Rectangle pos_default;
@@ -15,6 +15,7 @@ class BUTTON{
     std::string title;
     bool flag_selected;
     FUNC_T (*function)( ARG_T );
+    FUNC_T (*function2)( ARG_T , HSM<T>* );
 
     public:
     BUTTON( Rectangle rec , Color cor , string name , FUNC_T (*func)( ARG_T ) ){
@@ -24,10 +25,22 @@ class BUTTON{
         this->title = name;
         this->flag_selected = false;
 
-        this->function = func;
+        this->function  = func;
+        this->function2 = NULL;
+    }
+    BUTTON( Rectangle rec , Color cor , string name , FUNC_T (*func)( ARG_T, HSM<T>* ) ){
+        this->pos_default = rec;
+        this->pos = rec;
+        this->cor = cor;
+        this->title = name;
+        this->flag_selected = false;
+
+        this->function = NULL;
+        this->function2 = func;
     }
 
     void call( ARG_T arg_prog ){ this->function( arg_prog ); }
+    void call2( ARG_T arg_prog , HSM<T> *machine ){ this->function2( arg_prog , machine ); }
 
     Rectangle get_pos_default(){ return pos_default; }
     Rectangle getpos(){ return pos; }
@@ -48,8 +61,8 @@ class BUTTON{
 
 
 
-template <typename FUNC_T , typename ARG_T >
-void UpdateButton( BUTTON<FUNC_T,ARG_T> &button , ARG_T prog ){
+template <typename FUNC_T , typename ARG_T , typename T >
+void UpdateButton( BUTTON<FUNC_T,ARG_T,T> &button , ARG_T prog ){
 
     if( CheckCollisionPointRec( GetMousePosition() ,  button.getpos() ) ){
         button.set_flag_selected( true );
@@ -59,6 +72,7 @@ void UpdateButton( BUTTON<FUNC_T,ARG_T> &button , ARG_T prog ){
         button.setheight( button.get_pos_default().height + 2 * BUTTONS_GROW_EFFECT );
         if( IsMouseButtonPressed( MOUSE_LEFT_BUTTON ) )
             button.call( prog );
+
         
     }else{
         button.set_flag_selected( false );
@@ -67,13 +81,14 @@ void UpdateButton( BUTTON<FUNC_T,ARG_T> &button , ARG_T prog ){
 
 }
 
-template <typename FUNC_T , typename ARG_T >
-void UpdateButton_Circle( BUTTON<FUNC_T,ARG_T> &button , HSMProgram **prog ){
+template <typename FUNC_T , typename ARG_T , typename T >
+void UpdateButton_Circle( BUTTON<FUNC_T,ARG_T,T> &button , HSMProgram **prog , HSM<T> *hsm ){
 
     if( CheckCollisionPointCircle( GetMousePosition() , (Vector2){button.getpos().x , button.getpos().y} , button.getpos().width  ) ){
         button.set_flag_selected( true );
         if( IsMouseButtonPressed( MOUSE_LEFT_BUTTON ) )
-            button.call( prog );
+            button.call2( *prog , hsm );
+
         
     }else{
         button.set_flag_selected( false );

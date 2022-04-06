@@ -20,9 +20,9 @@ int main(){
 
     // Interface
     EDITOR editor;
-    BUTTON<void ,HSMProgram**> button_load( BUTTON_LOAD , BUTTON_LOAD_COLOR , "LOAD" , load_function );
-    BUTTON<void ,HSMProgram*> button_save( BUTTON_SAVE , BUTTON_SAVE_COLOR , "SAVE" , save_function );
-    BUTTON<void ,HSMProgram**> button_play( BUTTON_PLAY , BUTTON_PLAY_COLOR , "PLAY" , load_function );
+    BUTTON<void, HSMProgram**, int> button_load( BUTTON_LOAD , BUTTON_LOAD_COLOR , "LOAD" , load_function );
+    BUTTON<void, HSMProgram*, int> button_save( BUTTON_SAVE , BUTTON_SAVE_COLOR , "SAVE" , save_function );
+    BUTTON<void, HSMProgram*, int> button_play( BUTTON_PLAY , BUTTON_PLAY_COLOR , "PLAY" , play_function );
     int stack_first_visible = 0;
     bool stack_f_up = false;
     bool stack_f_down = false;
@@ -34,9 +34,11 @@ int main(){
     while( !WindowShouldClose() ){
         UpdateMouseCursor();
         UpdateButton( button_load , &prog );
-        UpdateButton( button_save , prog );
-        UpdateButton_Circle( button_play , &prog );
-        
+        UpdateButton( button_save , prog );  
+        UpdateButton_Circle( button_play , &prog , &hsm);
+        if( hsm.flag_execution )
+            hsm.run(prog);
+
         stack_f_down = stack_f_up = false;
         UpdateStack( stack_first_visible , stack_f_up , stack_f_down );
         editor.UpdateEditor( prog );

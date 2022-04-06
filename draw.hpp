@@ -8,8 +8,8 @@
 #include "update.hpp"
 #include "utils.hpp"
 
-template <typename FUNC_T , typename ARG_T >
-void DrawButton( BUTTON<FUNC_T,ARG_T> button ){
+template <typename FUNC_T , typename ARG_T , typename T >
+void DrawButton( BUTTON<FUNC_T,ARG_T,T> button ){
     float font_size = 4.5 * button.getpos().height / 5;
 
     DrawRectangleRec( button.getpos() , BUTTONS_COLOR_BG );
@@ -25,8 +25,8 @@ void DrawButton( BUTTON<FUNC_T,ARG_T> button ){
 
 }
 
-template <typename FUNC_T , typename ARG_T >
-void DrawButton_Circle( BUTTON<FUNC_T,ARG_T> button ){
+template <typename FUNC_T , typename ARG_T , typename T >
+void DrawButton_Circle( BUTTON<FUNC_T,ARG_T,T> button ){
     float font_size = 4.5 * button.getpos().height / 5;
     float radius = button.get_pos_default().width; 
     float borda = button.get_pos_default().height;
