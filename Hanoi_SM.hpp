@@ -55,6 +55,13 @@ class HSM{
     // I/O
     void out();
 
+    // JUMP's
+    void jmp( int );
+    void jz( int );
+    void jnz( int );
+    void jzr( int );
+    void jnzr( int );
+
     // Others
     void nop(){}
     void reset();
@@ -172,6 +179,53 @@ void HSM<T>::out(){
         cout << "== EMPTY STACK ==" << endl;
 }
 
+// JUMP's =======================================================================================================================
+template <typename T>
+void HSM<T>::jmp( int n ){
+    line_execution += n;
+    if( line_execution < 0 )
+        line_execution = 0;
+}
+
+template <typename T>
+void HSM<T>::jz( int n ){
+    if( *stack[ tos ] == 0 ){
+        line_execution += n;
+        if( line_execution < 0 )
+            line_execution = 0;
+    }
+}
+
+
+template <typename T>
+void HSM<T>::jnz( int n ){
+    if( *stack[ tos ] ){
+        line_execution += n;
+        if( line_execution < 0 )
+            line_execution = 0;
+    }
+}
+
+
+template <typename T>
+void HSM<T>::jzr( int n ){
+    if( !R[ tos ] ){
+        line_execution += n;
+        if( line_execution < 0 )
+            line_execution = 0;
+    }
+}
+
+template <typename T>
+void HSM<T>::jnzr( int n ){
+    if( R[ tos ] ){
+        line_execution += n;
+        if( line_execution < 0 )
+            line_execution = 0;
+    }
+}
+
+
 // Others =======================================================================================================================
 template <typename T>
 void HSM<T>::reset(){
@@ -282,6 +336,7 @@ int HSM<T>::run( HSMProgram *prog ){
 
     return retorno;
 }
+
 
 
 
