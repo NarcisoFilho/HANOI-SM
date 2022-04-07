@@ -29,7 +29,11 @@ class HSMProgram{
     void print();
     friend int count_file_lines( fstream& );
     void insert_char_prog_line( char ch , int col , int lin );
+    void append_char_prog_line( char ch , int lin );
     void remove_char_prog_line( int col , int lin );
+    void add_line();
+    void add_line( int );
+    void remove_line( int );
 };
 
 
@@ -40,7 +44,13 @@ HSMProgram::HSMProgram(){
     // Allocation enough space to program
     program = new string[ qtd_lines ];
     for( int k = 0 ; k < qtd_lines ; k++ )
-        program[ k ] = "k";
+        program[ k ] = "";
+
+    program[ 0 ] = "##Welcome to HANOI StackMachine!";
+    program[ 1 ] = "";
+    program[ 2 ] = "    ##Write your code here ";
+    program[ 3 ] = "    ##or load one file ";
+    program[ 4 ] = "    ##Execute it in the green arrow button";
 }
 
 HSMProgram::HSMProgram( string file_name ){
@@ -101,14 +111,73 @@ string HSMProgram::get_program_line( int line ){
 }
 
 void HSMProgram::insert_char_prog_line( char ch , int col , int lin ){
-    // if( col >= 0 && col < program[ lin ].length() )   
-        program[ lin ].insert( program[ lin ].begin() + col , ch );
+    int last = program[ lin ].length() - 1;
+    
+    //if( col >= 0 && col < program[ lin ].length() )
+    {
+        program[lin].append(" ");
+        for( int i = last + 1 ; i > col ; i-- )
+            program[lin][ i ] = program[lin][ i - 1 ];
+        //program[ lin ].insert( program[ lin ].begin() + col , ch );
+        program[ lin ][ col ] = ch;
+    }   
+}
+
+void HSMProgram::append_char_prog_line( char ch , int lin ){
+    program[lin] += ch; 
 }
 
 void HSMProgram::remove_char_prog_line( int col , int lin ){
         program[ lin ].erase( col , 1 );   
 }
 
+void HSMProgram::add_line(){
+    string *new_program = new string[ ++qtd_lines ];;
+
+    for( int i = 0 ; i < qtd_lines - 1 ; i++ )
+        new_program[ i ] = program[ i ];
+    
+    delete[] program;
+
+    program = new_program;
+
+    program[ qtd_lines - 1 ] = "";
+}
+
+void HSMProgram::add_line( int n ){
+    string *new_program = new string[ ++qtd_lines ];
+    int i = 0 , j = 0;
+
+    while(  j < qtd_lines - 1 ){
+        new_program[ i ] = program[ j ];
+        i++;
+        j++;
+        if( j == n ) i++;
+    }
+    
+    delete[] program;
+
+    program = new_program;
+
+    program[ n ] = "";
+}
+
+
+void HSMProgram::remove_line( int n ){
+    string *new_program = new string[ --qtd_lines ];
+    int i = 0 , j = 0;
+
+    while(  i < qtd_lines ){
+        new_program[ i ] = program[ j ];
+        i++;
+        j++;
+        if( i == n ) j++;
+    }
+    
+    delete[] program;
+
+    program = new_program;
+}
 
 
 

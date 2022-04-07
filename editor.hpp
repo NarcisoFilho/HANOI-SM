@@ -47,10 +47,17 @@ Vector2 pixelToEditor_col_lin(  HSMProgram *prog , Vector2 pos_pixel = VECm1 ){
 }
 
 void EDITOR::UpdateEditor( HSMProgram *prog ){
+    string str_aux;
+
     // Control
     if( IsKeyPressed( KEY_DOWN ) ){
         current_lin++;
+        
+        if( current_lin >= prog->get_qtd_lines() - 1 )
+            prog->add_line();
+
         current_col = prog->get_program_line( current_lin ).length();
+
     }
     if( current_lin > 0 )
         if( IsKeyPressed( KEY_UP ) ){
@@ -64,6 +71,30 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         if( IsKeyPressed( KEY_LEFT ) )
             current_col--;
 
+    if( IsKeyPressed( KEY_ENTER ) ){
+        // add line
+        str_aux = prog->get_program_line( current_lin );
+        prog->add_line( current_lin );
+        current_lin++;
+        
+        
+        // Restore the content of line above
+        for( int j =  current_col - 1 ; j >= 0 ; j-- ){
+            prog->insert_char_prog_line( str_aux[ j ] , 0 , current_lin - 1 );
+        }
+        
+        // Remove wrong content form actual line
+        for( int j = 0; j < current_col ; j++ ){
+            prog->remove_char_prog_line( 0 , current_lin );
+        }
+        // Transfer content for next line
+        // for( int j = prog->get_program_line( current_lin - 1 ).length() - 1 ; j >= current_col ; j-- ){
+        //     prog->insert_char_prog_line( prog->get_program_line( current_lin - 1 )[ j ] , 0 , current_lin );
+        // }
+
+        // Column indicator to zero
+        current_col = 0;
+    }
     if( CheckCollisionPointRec( GetMousePosition() , EDITOR_REC ) ){
         if( IsMouseButtonPressed( MOUSE_LEFT_BUTTON ) ){
             current_col = pixelToEditor_col_lin( prog ).x;
@@ -71,7 +102,14 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         }
 
     }
+    // END and HOME
+    if( IsKeyPressed( KEY_END ) )
+        current_col = prog->get_program_line( current_lin ).length();
     
+    if( IsKeyPressed( KEY_HOME ) )
+        current_col = 0;
+
+
     // Input text
     char ch;
     if( ( ch = GetCharPressed() ) != 0 ){
@@ -86,12 +124,26 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
             current_col--;
         }else
             if( current_lin > 0 ){
+                str_aux = prog->get_program_line( current_lin );
+                prog->remove_line( current_lin ); 
                 current_lin--;
                 current_col = prog->get_program_line( current_lin ).length();
+
+                for( int j = 0 ; j < str_aux.length() ; j++ )
+                    prog->append_char_prog_line( str_aux[ j ] , current_lin );
             }
     }
-
-    cout << "( " << current_col << " , " << current_lin << " ) " << endl;
+    if( IsKeyPressed( KEY_DELETE ) ){
+        if( current_col <  prog->get_program_line( current_lin ).length() ){
+            prog->remove_char_prog_line(current_col , current_lin );
+        }else
+            if( current_lin < prog->get_qtd_lines() - 1 ){
+                str_aux = prog->get_program_line( current_lin + 1 );
+                prog->remove_line( current_lin + 1 ); 
+                for( int j = 0 ; j < str_aux.length() ; j++ )
+                    prog->append_char_prog_line( str_aux[ j ] , current_lin );
+            }
+    }
 }
 
 void EDITOR::print_editor_content( HSMProgram &prog ){
@@ -104,6 +156,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
         inst_ws.erase( remove( inst_ws.begin() , inst_ws.end() , ' ') , inst_ws.end() );
         
         color = EDITOR_DEFAULT_COLOR_TEXT;
+        
 
         if( inst_ws == "add"
         || inst_ws == "sub"
@@ -123,25 +176,18 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
         else if( inst_ws == "out" )
             color = EDITOR_HIGHLIGHT_IO_INSTRUCTION;
         
-        if( !contain( inst , "push" ) )
+        if( !contain( inst , "push" ) || contain( inst , "##" ) )            
             DrawText(
                 inst.c_str(),
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT,
                 EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
-                color
+                contain(inst , "##" ) ? EDITOR_HIGHLIGHT_COMMENT : color
             );
         else{
             int space = inst.find("push") + 4;
-            string inst_e;
-            string arg;
-            
-            // if(inst.length() >= space ){
-                inst_e = inst.substr( 0 , space );
-                arg = inst.substr( inst.find("push") + 4);
-            // }else{
-
-            // }
+            string inst_e = inst.substr( 0 , space );
+            string arg = inst.substr( space);
 
             DrawText(
                 inst_e.c_str(),
@@ -152,7 +198,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
             );
             DrawText(
                 arg.c_str(),
-                EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT + MeasureText( (inst_e+" ").c_str() , EDITOR_TEXT_FZ ),
+                EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT + MeasureText( (inst_e ).c_str() , EDITOR_TEXT_FZ ),
                 EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
                 contain( arg , "$R" ) ? EDITOR_HIGHLIGHT_REGISTER : EDITOR_HIGHLIGHT_CONSTANTE
