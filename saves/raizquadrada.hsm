@@ -4,7 +4,6 @@
 
 push 25
 pop $R3
-pop
 push $R3
 pop $R4		
 
