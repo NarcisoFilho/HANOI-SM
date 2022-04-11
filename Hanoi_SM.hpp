@@ -11,7 +11,7 @@
 using namespace std;
 
 #define STACK_SIZE_DEFAULT 128
-#define QTD_REGISTERS 4
+#define QTD_REGISTERS 6
 
 
 /** class HSM : Stack Machine
@@ -21,7 +21,7 @@ using namespace std;
  */
 template <typename T = int>
 class HSM{
-    T R[4];            // Machine's Registers
+    T R[QTD_REGISTERS];            // Machine's Registers
     T *stack;       // Stack HSM memory region
     int tos;        // Top of the stack
     int height;     // Stack's height ( Number of Elements )
@@ -318,7 +318,11 @@ int HSM<T>::step( HSMProgram *prog ){
                 
                 if( contain( arg , "$R" )
                 || flag_push_who_v ){
-                    if( contain( str , "$R4" ) )
+                    if( contain( str , "$R6" ) )
+                        this->pop( 5 );
+                    else if( contain( str , "$R5" ) )
+                        this->pop( 4 );
+                    else if( contain( str , "$R4" ) )
                         this->pop( 3 );
                     else if( contain( str , "$R3" ) )
                         this->pop( 2 );
@@ -339,7 +343,11 @@ int HSM<T>::step( HSMProgram *prog ){
 
                 if( contain( str , "$R" )
                 || flag_push_who_v ){
-                    if( contain( str , "$R4" ) )
+                    if( contain( str , "$R6" ) )
+                        this->pushR( 5 );
+                    else if( contain( str , "$R5" ) )
+                        this->pushR( 4 );
+                    else if( contain( str , "$R4" ) )
                         this->pushR( 3 );
                     else if( contain( str , "$R3" ) )
                         this->pushR( 2 );

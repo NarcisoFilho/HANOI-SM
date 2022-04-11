@@ -179,7 +179,11 @@ void load_function( HSMProgram **prog ){
 
 
 void save_function( HSMProgram *prog ){
-    string file_name = get_name();
+    string file_name = "saves\\" + get_name();
+    if( !contain(file_name, ".hsm")   )
+        if( !contain(file_name, ".txt") )
+            file_name += ".hsm";
+
     ofstream file( file_name , ios::out | ios::trunc );
 
     if( !file.is_open() ){
