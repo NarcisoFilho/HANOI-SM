@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <string>
-#include<algorithm>
+#include <algorithm>
 
 using namespace std;
 
@@ -169,14 +169,19 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
         || inst_ws == "AND"
         || inst_ws == "MIR" )
             color = EDITOR_HIGHLIGHT_LOGIC_INSTRUCTION;
-        else if( inst_ws == "pop"
-        || inst == "ifz"
-        || inst == "ifnz" )
-            color = EDITOR_HIGHLIGHT_CONTROL_INSTRUCTION;
+        else if( inst_ws == "pop" )
+            color = EDITOR_HIGHLIGHT_CONTROL_STACK_INSTRUCTION;
+        else if( contain( inst , "jmp" )
+        || contain( inst , "jz" )
+        || contain( inst , "jnz" )
+        || contain( inst , "jzr" )
+        || contain( inst , "jnzr" ) )
+            color = EDITOR_HIGHLIGHT_CONTROL_EXECUTION_INSTRUCTION;
         else if( inst_ws == "out" )
             color = EDITOR_HIGHLIGHT_IO_INSTRUCTION;
         
-        if( !contain( inst , "push" ) || contain( inst , "##" ) )            
+        if( contain( inst , "##" ) ||
+        !( contain( inst , "push" ) || contain( inst , "jmp" ) || contain( inst , "jz" ) || contain( inst , "jnz" ) || contain( inst , "jzr" ) || contain( inst , "jnzr" ) ) )
             DrawText(
                 inst.c_str(),
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT,
@@ -185,7 +190,20 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
                 contain(inst , "##" ) ? EDITOR_HIGHLIGHT_COMMENT : color
             );
         else{
-            int space = inst.find("push") + 4;
+            int space; 
+            if( contain( inst , "push" ) )
+                space = inst.find("push") + 4;
+            if( contain( inst , "jmp" ) )
+                space = inst.find("jmp") + 3;
+            if( contain( inst , "jz" ) )
+                space = inst.find("jz") + 2;
+            if( contain( inst , "jnz" ) )
+                space = inst.find("jnz") + 3;
+            if( contain( inst , "jzr" ) )
+                space = inst.find("jzr") + 3;
+            if( contain( inst , "jnzr" ) )
+                space = inst.find("jnzr") + 4;
+
             string inst_e = inst.substr( 0 , space );
             string arg = inst.substr( space);
 
@@ -194,7 +212,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT,
                 EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
-                EDITOR_HIGHLIGHT_CONTROL_INSTRUCTION
+                contain( inst , "push" ) ? EDITOR_HIGHLIGHT_CONTROL_STACK_INSTRUCTION : EDITOR_HIGHLIGHT_CONTROL_EXECUTION_INSTRUCTION
             );
             DrawText(
                 arg.c_str(),

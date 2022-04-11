@@ -205,4 +205,50 @@ void DrawStack( HSM<T> &hsm , int first , bool f_u , bool f_d ){
 
 }
 
+template<typename T>
+void DrawRegisters( HSM<T> *hsm ){
+    Rectangle rec_aux;
+    string str;
+    const float rz_nameReg_contReg = 3.0 / 7;
+
+    for( int i = 0 ; i < QTD_REGISTERS ; i ++ ){
+        rec_aux = REGISTERS_REC0;
+        rec_aux.y += ( rec_aux.height + 15 ) * i ;
+
+        DrawRectangleRec( rec_aux , REGISTERS_BG_COLOR );
+
+        rec_aux.height *= rz_nameReg_contReg;
+        str = "R";
+        if( i != 0 )
+            str += (char)(i+1 + '0');
+
+        DrawRectangleRec( rec_aux , DARKGRAY );
+        DrawText( 
+            str.c_str(),
+            rec_aux.x + ( rec_aux.width - MeasureText(str.c_str(),.75 * rec_aux.height)) / 2 ,
+            rec_aux.y + ( rec_aux.height - .75 * rec_aux.height ) / 2 ,
+            .75 * rec_aux.height,
+            RAYWHITE 
+        );
+        DrawRectangleLinesEx( rec_aux , REGISTERS_BORDER_THICK  , REGISTERS_BORDER_COLOR );
+        
+        rec_aux.height /= rz_nameReg_contReg;
+        DrawRectangleLinesEx( rec_aux , REGISTERS_BORDER_THICK , REGISTERS_BORDER_COLOR );
+
+        // Content
+        rec_aux.y += rec_aux.height * rz_nameReg_contReg;
+        rec_aux.height *= ( 1 - rz_nameReg_contReg );
+        str = to_string( hsm->getR( i ) );
+        DrawText(  
+            str.c_str(), 
+            rec_aux.x + ( rec_aux.width - MeasureText(str.c_str(),STACK_FZ)) / 2 ,
+            rec_aux.y + ( rec_aux.height - STACK_FZ) / 2 ,
+            STACK_FZ,
+            DARKBROWN 
+        );
+ 
+    }
+
+}
+
 #endif  // __DRAW_HPP_

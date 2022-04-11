@@ -53,6 +53,7 @@ int main(){
             DrawButton( button_save );
             DrawButton_Circle( button_play );
             DrawArrowPlay();
+            DrawRegisters( &hsm );
         EndDrawing();
 
     }

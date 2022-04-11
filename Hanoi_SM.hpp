@@ -3,12 +3,15 @@
 
 #include <iostream>
 #include <typeinfo>
+#include <algorithm>
 #include <ctime>
+
 #include "HSMProgram.hpp"
 #include "utils.hpp"
 using namespace std;
 
 #define STACK_SIZE_DEFAULT 128
+#define QTD_REGISTERS 4
 
 
 /** class HSM : Stack Machine
@@ -18,7 +21,7 @@ using namespace std;
  */
 template <typename T = int>
 class HSM{
-    T R;            // Unic Machine's Register
+    T R[4];            // Machine's Registers
     T *stack;       // Stack HSM memory region
     int tos;        // Top of the stack
     int height;     // Stack's height ( Number of Elements )
@@ -49,8 +52,9 @@ class HSM{
 
     // Control
     void push( T n );
-    void push();
+    void pushR( int r = 0 );
     void pop();
+    void pop( int r );
 
     // I/O
     void out();
@@ -59,8 +63,8 @@ class HSM{
     void jmp( int );
     void jz( int );
     void jnz( int );
-    void jzr( int );
-    void jnzr( int );
+    void jzr( int , int );
+    void jnzr( int , int );
 
     // Others
     void nop(){}
@@ -71,6 +75,7 @@ class HSM{
     T get( int n ){ return stack[ n ]; }
     int get_tos(){ return tos; }
     int get_height(){ return height; }
+    T getR( int r = 0 ){ return R[ r ]; }
 
 
     // Execution
@@ -103,25 +108,29 @@ HSM<T>::~HSM(){
 template <typename T>
 void HSM<T>::add(){
     if( tos > 0 )
-        R = stack[tos--] + stack[tos--];
+        R[0] = stack[tos--] + stack[tos--];
 }
 
 template <typename T>
 void HSM<T>::sub(){
     if( tos > 0 )
-        R = -stack[tos--] + stack[tos--];
+        R[0] = -stack[tos--] + stack[tos--];
 }
 
 template <typename T>
 void HSM<T>::mul(){
     if( tos > 0 )
-        R = stack[tos--] * stack[tos--];
+        R[0] = stack[tos--] * stack[tos--];
 }
 
 template <typename T>
 void HSM<T>::div(){
-    if( tos > 0 )
-        R = stack[tos--] / stack[tos--];
+    if( tos > 0 ){
+        T n1 = stack[ tos ];
+        T n2 = stack[tos -1];
+        R[0] = n1 / n2;
+        tos -= 2;
+    }
 }
 
 template <typename T>
@@ -130,7 +139,7 @@ void HSM<T>::mod(){
         this->nop();
     else
         if( tos > 0 )
-            R = stack[tos--] % stack[tos--];
+            R[0] = stack[tos--] % stack[tos--];
 }
 
 // Logics ========================================================================================================================
@@ -161,13 +170,23 @@ void HSM<T>::push( T n ){
 }
 
 template <typename T>
-void HSM<T>::push(){
-    stack[ ++tos ] = R;
+void HSM<T>::pushR( int r ){
+    stack[ ++tos ] = R[ r ];
 }
 
 template <typename T>
-void HSM<T>::pop(){
-    stack[ tos-- ] = 0;
+void HSM<T>::pop(){    
+    if( tos >= 0 ){
+        stack[ tos-- ] = 0;
+    }
+}
+
+template <typename T>
+void HSM<T>::pop( int r ){
+    if( tos >= 0 ){
+        R[ r ] = stack[ tos ];
+        stack[ tos-- ] = 0;
+    }
 }
 
 // I/O =======================================================================================================================
@@ -182,15 +201,15 @@ void HSM<T>::out(){
 // JUMP's =======================================================================================================================
 template <typename T>
 void HSM<T>::jmp( int n ){
-    line_execution += n;
+    line_execution += n - 1 ;
     if( line_execution < 0 )
-        line_execution = 0;
+        line_execution = -1;
 }
 
 template <typename T>
 void HSM<T>::jz( int n ){
-    if( *stack[ tos ] == 0 ){
-        line_execution += n;
+    if( !stack[ tos ] ){
+        line_execution += n - 1;
         if( line_execution < 0 )
             line_execution = 0;
     }
@@ -199,8 +218,8 @@ void HSM<T>::jz( int n ){
 
 template <typename T>
 void HSM<T>::jnz( int n ){
-    if( *stack[ tos ] ){
-        line_execution += n;
+    if( stack[ tos ] ){
+        line_execution += n - 1;
         if( line_execution < 0 )
             line_execution = 0;
     }
@@ -208,18 +227,18 @@ void HSM<T>::jnz( int n ){
 
 
 template <typename T>
-void HSM<T>::jzr( int n ){
-    if( !R[ tos ] ){
-        line_execution += n;
+void HSM<T>::jzr( int n , int r ){
+    if( !R[ r ] ){
+        line_execution += n - 1;
         if( line_execution < 0 )
             line_execution = 0;
     }
 }
 
 template <typename T>
-void HSM<T>::jnzr( int n ){
-    if( R[ tos ] ){
-        line_execution += n;
+void HSM<T>::jnzr( int n , int r ){
+    if( R[ r ] ){
+        line_execution += n - 1;
         if( line_execution < 0 )
             line_execution = 0;
     }
@@ -235,6 +254,10 @@ void HSM<T>::reset(){
     for( int i = 0 ; i < height ; i++ )
         stack[ i ] = 0;
 
+    // Clear Registers
+    for( int r = 0 ; r < QTD_REGISTERS ; r++ )
+        R[ r ] = 0;
+
     flag_execution = false;
     line_execution = -1;
     delay_execution = false;
@@ -244,14 +267,22 @@ void HSM<T>::reset(){
 template<typename T>
 int HSM<T>::step( HSMProgram *prog ){
     string str;
+    string aux;
+    int n;
+    int r;
     T value;
     int pos;
     int flag_push_who_v;
+    int flag_jump_who_v;
     int flag_blank_line;
 
     if( line_execution < prog->get_qtd_lines() - 1 ){
         line_execution++;
         str = prog->get_program_line( line_execution );
+
+        if( contain(str , "##") )
+            return 1;
+
         flag_blank_line = true;
         for( int k = 0 ; k < str.size() ; k++ )
             if( str[ k ] != ' ' && str[ k ] != '\n' && str[ k ] != '\r' && str[ k ] != '\b'&& str[ k ] != '\t' ){
@@ -280,8 +311,24 @@ int HSM<T>::step( HSMProgram *prog ){
                 this->AND();
             else if( contain( str , "MIR" ) )     
                 this->MIR();
-            else if( contain( str , "pop" ) )     
-                this->pop();        
+            else if( contain( str , "pop" ) ){
+                int space = str.find("pop") + 3;
+                string inst_e = str.substr( 0 , space );
+                string arg = str.substr( space);
+                
+                if( contain( arg , "$R" )
+                || flag_push_who_v ){
+                    if( contain( str , "$R4" ) )
+                        this->pop( 3 );
+                    else if( contain( str , "$R3" ) )
+                        this->pop( 2 );
+                    else if( contain( str , "$R2" ) )
+                        this->pop( 1 );
+                    else 
+                        this->pop();
+                        
+                }
+            }     
             else if( contain( str , "push" ) ){
                 pos = str.find( "push" );
                 flag_push_who_v = true;
@@ -291,11 +338,85 @@ int HSM<T>::step( HSMProgram *prog ){
                         flag_push_who_v = false;
 
                 if( contain( str , "$R" )
-                || flag_push_who_v )
-                    this->push();
+                || flag_push_who_v ){
+                    if( contain( str , "$R4" ) )
+                        this->pushR( 3 );
+                    else if( contain( str , "$R3" ) )
+                        this->pushR( 2 );
+                    else if( contain( str , "$R2" ) )
+                        this->pushR( 1 );
+                    else 
+                        this->pushR();
+                        
+                }
                 else{
                     value = stoi( str.substr( pos + 4 ) );
                     this->push( value );
+                }
+            }else if( contain( str , "jmp" ) || contain( str , "jz" ) || contain( str , "jnz" ) || contain( str , "jzr" ) || contain( str , "jnzr" ) ){
+                int space; 
+                if( contain( str , "jmp" ) )
+                    space = str.find("jmp") + 3;
+                if( contain( str , "jz" ) )
+                    space = str.find("jz") + 2;
+                if( contain( str , "jnz" ) )
+                    space = str.find("jnz") + 3;
+                if( contain( str , "jzr" ) )
+                    space = str.find("jzr") + 3;
+                if( contain( str , "jnzr" ) )
+                    space = str.find("jnzr") + 4;
+
+                string inst_e = str.substr( 0 , space );
+                string arg = str.substr( space);
+                
+                
+                if( !contain( str , "jzr" ) && !contain( str , "jnzr" ) ){
+                    // aux = str.substr( str.find("jmp") );
+                    // aux.erase( remove( aux.begin() , aux.end() , ' ' ) , aux.end() );
+                    inst_e.erase( remove( inst_e.begin() , inst_e.end() , ' ' ) , inst_e.end() );
+                    arg.erase( remove( arg.begin() , arg.end() , ' ' ) , arg.end() );
+                    n = atoi( arg.c_str() );
+                    // line_execution += n + ( n > 0 ? 1 : -1 );
+                    if( contain( str , "jmp" ) )
+                        this->jmp( n );
+                    if( contain( str , "jz" ) )
+                        this->jz( n );
+                    if( contain( str , "jnz" ) )
+                        this->jnz( n );
+                }else{
+                    inst_e.erase( remove( inst_e.begin() , inst_e.end() , ' ' ) , inst_e.end() );
+                    string arg1;
+                    string arg2;
+                    int sep = 0;
+                    while( arg[ sep ] == ' ' )
+                            sep++;
+
+                    arg.erase( remove( arg.begin() , arg.begin() + sep , ' ' ) , arg.begin() + sep );
+
+                    sep = 0;
+                    while( arg[ sep ] != ' ' )
+                        sep++;
+                    arg1 = arg.substr( 0 , sep );
+                    
+                    arg2 = arg.substr( sep );
+                    arg2.erase( remove( arg2.begin() , arg2.end() , ' ') , arg2.end() );
+
+                    int n1 = atoi( arg1.c_str() );
+
+                    int n2;
+                    if( arg2 == "$R2")
+                        n2 = 1;
+                    if( arg2 == "$R3")
+                        n2 = 2;
+                    if( arg2 == "$R4")
+                        n2 = 3;
+                    if( arg2 == "$R")
+                        n2 = 0;
+
+                    if( contain( inst_e , "jzr" ) )
+                        this->jzr( n1 , n2 );
+                    if( contain( inst_e , "jnzr" ) )
+                        this->jnzr( n1 , n2 );
                 }
             }else 
                 return 0;
@@ -304,7 +425,6 @@ int HSM<T>::step( HSMProgram *prog ){
         flag_execution = 0;
         line_execution = -1;
     }
-
 
     return 1;
 }
