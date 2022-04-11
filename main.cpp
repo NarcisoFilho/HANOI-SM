@@ -54,7 +54,7 @@ int main(){
             DrawButton_Circle( button_play );
             DrawArrowPlay();
             DrawRegisters( &hsm );
-            DrawLineIndicator( &hsm );
+            DrawLineIndicator( &hsm , prog );
         EndDrawing();
 
     }

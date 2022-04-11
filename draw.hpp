@@ -253,7 +253,7 @@ void DrawRegisters( HSM<T> *hsm ){
 
 
 template<typename T>
-void DrawLineIndicator( HSM<T> *hsm ){
+void DrawLineIndicator( HSM<T> *hsm , HSMProgram *prog ){
     if(hsm->get_line_execution() >= 0 ){
             // Execution Indicator
         Rectangle rec_ind_exec = EDITOR_REC;
@@ -261,6 +261,41 @@ void DrawLineIndicator( HSM<T> *hsm ){
         rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution();
 
         DrawRectangleRec( rec_ind_exec , hsm->flag_error ? LINE_EXECUTION_COLOR_FAILED : LINE_EXECUTION_COLOR_SUCCESS );
+
+        if( hsm->flag_error ){
+            string error_msg;
+
+            switch( hsm->get_error_code() ){
+                case 0:
+                    error_msg = "\aERROR 000:!";
+                    break;
+                case 1:
+                    error_msg = "\aERROR 001:!";
+                    break;
+                case 2:
+                    error_msg = "\aERROR 002:!";
+                    break;
+                case 3:
+                    error_msg = "\aERROR 003: POP in empty stack!";
+                    break;
+                case 4:
+                    error_msg = "\aERROR 004: PUSH in full stack!";
+                    break;
+
+                case 5:
+                    error_msg = "\aERROR 005: Error not listed!";
+                    break;
+
+            }
+
+            DrawText( 
+                error_msg.c_str() , 
+                EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT + MeasureText(  prog->get_program_line(hsm->get_line_execution()).c_str()  , EDITOR_TEXT_FZ ) + 10,
+                EDITOR_REC_Y + EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution(),
+                EDITOR_TEXT_FZ,
+                ERROR_TEXT_COLOR
+            );
+        }
     }
 }
 

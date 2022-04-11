@@ -27,11 +27,15 @@ class HSM{
     int height;     // Stack's height ( Number of Elements )
     long long int size;       // Stack's size in Bytes
     
+    
     public:
     bool flag_execution;
     int line_execution;
     bool delay_execution;
     bool flag_error;
+
+    protected:
+    int tipo_erro;
 
     public:
     // Constructor + Destructor
@@ -78,11 +82,12 @@ class HSM{
     int get_height(){ return height; }
     T getR( int r = 0 ){ return R[ r ]; }
     int get_line_execution(){ return line_execution; }
+    int get_error_code(){ return tipo_erro; }
 
 
     // Execution
     int step( HSMProgram* );
-    void stop_error();
+    void stop_error( int );
 
 };
 
@@ -293,9 +298,9 @@ int HSM<T>::step( HSMProgram *prog ){
             }
             
         if(!flag_blank_line ){
-            if( contain( str , "out" ) )          
+            if( contain( str , "out" ) ){
                 this->out();
-            else if( contain( str , "add" ) )     
+            }else if( contain( str , "add" ) )     
                 this->add();
             else if( contain( str , "sub" ) )     
                 this->sub();
@@ -314,6 +319,9 @@ int HSM<T>::step( HSMProgram *prog ){
             else if( contain( str , "MIR" ) )     
                 this->MIR();
             else if( contain( str , "pop" ) ){
+                if( tos < 0 )
+                    return ERROR_3_POP;
+
                 int space = str.find("pop") + 3;
                 string inst_e = str.substr( 0 , space );
                 string arg = str.substr( space);
@@ -337,6 +345,9 @@ int HSM<T>::step( HSMProgram *prog ){
                     this->pop();
             }     
             else if( contain( str , "push" ) ){
+                if( tos >= STACK_SIZE_DEFAULT - 1 )
+                    return ERROR_4_PUSH;
+
                 pos = str.find( "push" );
                 flag_push_who_v = true;
 
@@ -430,7 +441,7 @@ int HSM<T>::step( HSMProgram *prog ){
                         this->jnzr( n1 , n2 );
                 }
             }else{
-                return 0;
+                return ERROR_1_INVALID_INSTRUCTION;
             } 
         }
     }else{
@@ -442,9 +453,11 @@ int HSM<T>::step( HSMProgram *prog ){
 }
 
 template<typename T>
-void HSM<T>::stop_error(){
+void HSM<T>::stop_error( int error_cod ){
     flag_execution = false;
     flag_error = true;
+
+    tipo_erro = error_cod - 10;
 }
 
 /** run: Interpret the program
@@ -465,8 +478,8 @@ int HSM<T>::run( HSMProgram *prog ){
     if( (1000.0 * clock()) / CLOCKS_PER_SEC - time_last_line >= DELAY_EXECUTION ){
         retorno = step( prog );
 
-        if( !retorno )
-            stop_error();
+        if( retorno >= 10 )
+            stop_error( retorno );
 
         time_last_line = (1000.0 * clock()) / CLOCKS_PER_SEC;
     }
