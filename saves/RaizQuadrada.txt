@@ -1,0 +1,45 @@
+##Raiz quadrada de um número (se nao for exata a resposta é arredondada)
+##trocar pelo número que deseja extrair a raiz na primeira linha
+##teste x=25, saída=5
+
+push 25
+pop $R3
+pop
+push $R3
+pop $R4		
+
+##loop do jump: 	
+push $R4	
+push $R3
+div 		 
+pop
+pop
+push $R
+push $R4
+sub		
+pop
+pop
+push $R
+jz 20
+pop
+push $R4
+push $R3
+div
+pop
+pop
+push $R
+push $R4 
+add		
+pop
+pop
+push 2
+push $R
+div 		
+pop
+pop
+push $R
+pop $R4		
+jmp -30
+pop	
+push $R4 
+out
