@@ -260,7 +260,7 @@ void DrawLineIndicator( HSM<T> *hsm ){
         rec_ind_exec.height = EDITOR_TEXT_LINE_HEIGHT;
         rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution();
 
-        DrawRectangleRec( rec_ind_exec , LINE_EXECUTION_COLOR_SUCCESS );
+        DrawRectangleRec( rec_ind_exec , hsm->flag_error ? LINE_EXECUTION_COLOR_FAILED : LINE_EXECUTION_COLOR_SUCCESS );
     }
 }
 

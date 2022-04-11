@@ -31,6 +31,7 @@ class HSM{
     bool flag_execution;
     int line_execution;
     bool delay_execution;
+    bool flag_error;
 
     public:
     // Constructor + Destructor
@@ -262,7 +263,7 @@ void HSM<T>::reset(){
     flag_execution = false;
     line_execution = -1;
     delay_execution = false;
-
+    flag_error = false;
 }
 
 template<typename T>
@@ -428,8 +429,9 @@ int HSM<T>::step( HSMProgram *prog ){
                     if( contain( inst_e , "jnzr" ) )
                         this->jnzr( n1 , n2 );
                 }
-            }else 
+            }else{
                 return 0;
+            } 
         }
     }else{
         flag_execution = 0;
@@ -442,6 +444,7 @@ int HSM<T>::step( HSMProgram *prog ){
 template<typename T>
 void HSM<T>::stop_error(){
     flag_execution = false;
+    flag_error = true;
 }
 
 /** run: Interpret the program
@@ -455,6 +458,10 @@ int HSM<T>::run( HSMProgram *prog ){
     int retorno = -1;
     static clock_t time_last_line = -DELAY_EXECUTION;  // Time in miliseconds 
 
+    if( flag_error ){
+        flag_error = 0;
+        line_execution = -1;
+    }
     if( (1000.0 * clock()) / CLOCKS_PER_SEC - time_last_line >= DELAY_EXECUTION ){
         retorno = step( prog );
 
