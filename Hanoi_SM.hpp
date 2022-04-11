@@ -114,20 +114,26 @@ HSM<T>::~HSM(){
 // Arithimetics ================================================================================================================== 
 template <typename T>
 void HSM<T>::add(){
-    if( tos > 0 )
+    if( tos > 0 ){
         R[0] = stack[tos--] + stack[tos--];
+        stack[ tos + 1 ] = stack[ tos + 2 ] = 0;
+    }
 }
 
 template <typename T>
 void HSM<T>::sub(){
-    if( tos > 0 )
+    if( tos > 0 ){
         R[0] = -stack[tos--] + stack[tos--];
+        stack[ tos + 1 ] = stack[ tos + 2 ] = 0;
+    }
 }
 
 template <typename T>
 void HSM<T>::mul(){
-    if( tos > 0 )
+    if( tos > 0 ){
         R[0] = stack[tos--] * stack[tos--];
+        stack[ tos + 1 ] = stack[ tos + 2 ] = 0;
+    }
 }
 
 template <typename T>
@@ -137,6 +143,7 @@ void HSM<T>::div(){
         T n2 = stack[tos -1];
         R[0] = n1 / n2;
         tos -= 2;
+        stack[ tos + 1 ] = stack[ tos + 2 ] = 0;
     }
 }
 
@@ -145,8 +152,10 @@ void HSM<T>::mod(){
     if( typeid(T) != typeid(int) && typeid(T) != typeid(char) )
         this->nop();
     else
-        if( tos > 0 )
+        if( tos > 0 ){
             R[0] = stack[tos--] % stack[tos--];
+            stack[ tos + 1 ] = stack[ tos + 2 ] = 0;
+        }
 }
 
 // Logics ========================================================================================================================
@@ -203,7 +212,7 @@ void HSM<T>::out(){
         cout << stack[ tos ] << endl;
     else
         cout << "== EMPTY STACK ==" << endl;
-}
+}       
 
 // JUMP's =======================================================================================================================
 template <typename T>
@@ -282,6 +291,9 @@ int HSM<T>::step( HSMProgram *prog ){
     int flag_push_who_v;
     int flag_jump_who_v;
     int flag_blank_line;
+
+    if( flag_error )
+        return tipo_erro + 10;
 
     if( line_execution < prog->get_qtd_lines() - 1 ){
         line_execution++;

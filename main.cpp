@@ -63,7 +63,6 @@ int main(){
             DrawArrowPlay();
             DrawFootPrint( foot );
             DrawLoop( loop );
-    
             DrawRegisters( &hsm );
             DrawLineIndicator( &hsm , prog );
 

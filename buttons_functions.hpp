@@ -210,7 +210,12 @@ void play_function( HSMProgram *prog , HSM<T> *machine ){
 
 template< typename T>
 void step_function( HSMProgram *prog , HSM<T> *machine ){
-    machine->step( prog );
+    int cod_ret = machine->step( prog );
+    
+    if( cod_ret >= 10 ){
+        machine->stop_error( cod_ret );
+    }
+
 }
 
 
