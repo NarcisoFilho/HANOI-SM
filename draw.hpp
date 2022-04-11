@@ -63,6 +63,30 @@ void DrawArrowPlay(){
     DrawTriangle( a , b , c , BUTTON_PLAY_COLOR );
 }
 
+void DrawFootPrint( Texture2D &foot_img ){
+    Rectangle src = (Rectangle){ 0 , 0 , static_cast<float>(foot_img.width), static_cast<float>(foot_img.height) };
+    Rectangle dst = BUTTON_STEP;
+    dst.width *= 1.5;
+    dst.height = dst.width;
+    dst.x -= dst.width / 2;
+    dst.y -= dst.height / 2;
+    
+
+    DrawTexturePro( foot_img , src , dst , VECNUL , 0, WHITE );
+}
+
+void DrawLoop( Texture2D &loop_img ){
+    Rectangle src = (Rectangle){ 0 , 0 , static_cast<float>(loop_img.width), static_cast<float>(loop_img.height) };
+    Rectangle dst = BUTTON_RESTART;
+    dst.width *= 1.5;
+    dst.height = dst.width;
+    dst.x -= dst.width / 2;
+    dst.y -= dst.height / 2;
+    
+
+    DrawTexturePro( loop_img , src , dst , VECNUL , 0, WHITE );
+}
+
 
 void DrawStackStructure( int begin , bool f_up , bool f_down ){
     int last = begin + STACK_QTD_PAG - 1;

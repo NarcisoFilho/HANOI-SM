@@ -23,6 +23,10 @@ int main(){
     BUTTON<void, HSMProgram**, int> button_load( BUTTON_LOAD , BUTTON_LOAD_COLOR , "LOAD" , load_function );
     BUTTON<void, HSMProgram*, int> button_save( BUTTON_SAVE , BUTTON_SAVE_COLOR , "SAVE" , save_function );
     BUTTON<void, HSMProgram*, int> button_play( BUTTON_PLAY , BUTTON_PLAY_COLOR , "PLAY" , play_function );
+    BUTTON<void, HSMProgram*, int> button_step( BUTTON_STEP , BUTTON_STEP_COLOR , "STEP" , step_function );
+    BUTTON<void, HSMProgram*, int> button_restart( BUTTON_RESTART , BUTTON_RESTART_COLOR , "RESTART" , restart_function );
+    Texture2D foot = LoadTexture("foot.png");
+    Texture2D loop = LoadTexture("loop.png");
     int stack_first_visible = 0;
     bool stack_f_up = false;
     bool stack_f_down = false;
@@ -36,6 +40,8 @@ int main(){
         UpdateButton( button_load , &prog );
         UpdateButton( button_save , prog );  
         UpdateButton_Circle( button_play , &prog , &hsm);
+        UpdateButton_Circle( button_step , &prog , &hsm);
+        UpdateButton_Circle( button_restart , &prog , &hsm);
         if( hsm.flag_execution )
             hsm.run(prog);
 
@@ -52,9 +58,15 @@ int main(){
             DrawButton( button_load );
             DrawButton( button_save );
             DrawButton_Circle( button_play );
+            DrawButton_Circle( button_step );
+            DrawButton_Circle( button_restart );
             DrawArrowPlay();
+            DrawFootPrint( foot );
+            DrawLoop( loop );
+    
             DrawRegisters( &hsm );
             DrawLineIndicator( &hsm , prog );
+
         EndDrawing();
 
     }

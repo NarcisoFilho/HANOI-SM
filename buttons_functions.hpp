@@ -208,4 +208,16 @@ void play_function( HSMProgram *prog , HSM<T> *machine ){
 }
 
 
+template< typename T>
+void step_function( HSMProgram *prog , HSM<T> *machine ){
+    machine->step( prog );
+}
+
+
+template< typename T>
+void restart_function( HSMProgram *prog , HSM<T> *machine ){
+    machine->reset();
+}
+
+
 #endif   // __BUTTONS_FUNCTIONS_HPP_
