@@ -331,7 +331,8 @@ int HSM<T>::step( HSMProgram *prog ){
                     else 
                         this->pop();
                         
-                }
+                }else 
+                    this->pop();
             }     
             else if( contain( str , "push" ) ){
                 pos = str.find( "push" );
