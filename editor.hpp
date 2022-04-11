@@ -243,6 +243,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
         flag_blind--;
     else
         flag_blind = 32;
+
 }
 
 void EDITOR::DrawEditor( HSMProgram *prog ){

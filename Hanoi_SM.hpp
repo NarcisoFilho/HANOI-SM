@@ -76,6 +76,7 @@ class HSM{
     int get_tos(){ return tos; }
     int get_height(){ return height; }
     T getR( int r = 0 ){ return R[ r ]; }
+    int get_line_execution(){ return line_execution; }
 
 
     // Execution

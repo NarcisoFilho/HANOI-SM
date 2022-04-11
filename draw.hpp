@@ -251,4 +251,17 @@ void DrawRegisters( HSM<T> *hsm ){
 
 }
 
+
+template<typename T>
+void DrawLineIndicator( HSM<T> *hsm ){
+    if(hsm->get_line_execution() >= 0 ){
+            // Execution Indicator
+        Rectangle rec_ind_exec = EDITOR_REC;
+        rec_ind_exec.height = EDITOR_TEXT_LINE_HEIGHT;
+        rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution();
+
+        DrawRectangleRec( rec_ind_exec , LINE_EXECUTION_COLOR_SUCCESS );
+    }
+}
+
 #endif  // __DRAW_HPP_
