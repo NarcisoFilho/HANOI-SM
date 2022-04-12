@@ -291,12 +291,18 @@ int HSM<T>::step( HSMProgram *prog ){
     int flag_push_who_v;
     int flag_jump_who_v;
     int flag_blank_line;
+    int av_qtd = prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES ) > 7 ? 7 : prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES );
+    int rc_qtd = prog->first_screen > 7 ? 7 : prog->first_screen;
+
+
 
     if( flag_error )
         return tipo_erro + 10;
 
     if( line_execution < prog->get_qtd_lines() - 1 ){
         line_execution++;
+        if( line_execution > prog->first_screen + EDITOR_QTD_LINES )
+            prog->first_screen += av_qtd;
         str = prog->get_program_line( line_execution );
 
         if( contain(str , "##") )
@@ -404,12 +410,15 @@ int HSM<T>::step( HSMProgram *prog ){
                 string arg = str.substr( space);
                 
                 
+                
                 if( !contain( str , "jzr" ) && !contain( str , "jnzr" ) ){
                     // aux = str.substr( str.find("jmp") );
                     // aux.erase( remove( aux.begin() , aux.end() , ' ' ) , aux.end() );
                     inst_e.erase( remove( inst_e.begin() , inst_e.end() , ' ' ) , inst_e.end() );
                     arg.erase( remove( arg.begin() , arg.end() , ' ' ) , arg.end() );
                     n = atoi( arg.c_str() );
+                    if( line_execution + n < prog->first_screen || line_execution + n > prog->first_screen + EDITOR_QTD_LINES )
+                        prog->first_screen = ( line_execution + n > 3 ? line_execution + n - 2 : line_execution + n );
                     // line_execution += n + ( n > 0 ? 1 : -1 );
                     if( contain( str , "jmp" ) )
                         this->jmp( n );
@@ -446,6 +455,9 @@ int HSM<T>::step( HSMProgram *prog ){
                         n2 = 3;
                     if( arg2 == "$R")
                         n2 = 0;
+
+                    if( line_execution + n1 < prog->first_screen || line_execution + n1 > prog->first_screen + EDITOR_QTD_LINES )
+                        prog->first_screen = ( line_execution + n1 > 3 ? line_execution + n1 - 2 : line_execution + n1 );
 
                     if( contain( inst_e , "jzr" ) )
                         this->jzr( n1 , n2 );

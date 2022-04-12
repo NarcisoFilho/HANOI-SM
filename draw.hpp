@@ -282,7 +282,7 @@ void DrawLineIndicator( HSM<T> *hsm , HSMProgram *prog ){
             // Execution Indicator
         Rectangle rec_ind_exec = EDITOR_REC;
         rec_ind_exec.height = EDITOR_TEXT_LINE_HEIGHT;
-        rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution();
+        rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * ( hsm->get_line_execution() - prog->first_screen );
 
         DrawRectangleRec( rec_ind_exec , hsm->flag_error ? LINE_EXECUTION_COLOR_FAILED : LINE_EXECUTION_COLOR_SUCCESS );
 
@@ -315,7 +315,7 @@ void DrawLineIndicator( HSM<T> *hsm , HSMProgram *prog ){
             DrawText( 
                 error_msg.c_str() , 
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT + MeasureText(  prog->get_program_line(hsm->get_line_execution()).c_str()  , EDITOR_TEXT_FZ ) + 10,
-                EDITOR_REC_Y + EDITOR_TEXT_LINE_HEIGHT * hsm->get_line_execution(),
+                EDITOR_REC_Y + EDITOR_TEXT_LINE_HEIGHT * ( hsm->get_line_execution() - prog->first_screen),
                 EDITOR_TEXT_FZ,
                 ERROR_TEXT_COLOR
             );
@@ -328,7 +328,11 @@ void DrawScrollBar( HSMProgram *prog ){
 
     if( prog->get_qtd_lines() > EDITOR_QTD_LINES ){
         Color color_bg = SCROLL_BAR_COLOR_BG;
-        bool flag_mouse_sel = CheckCollisionPointRec( GetMousePosition() , SCROLL_BAR_REC_BG);
+        Vector2 mouse_pos = GetMousePosition();
+        bool flag_mouse_sel = CheckCollisionPointRec( mouse_pos , SCROLL_BAR_REC_BG);
+        bool flag_mouse_sel_up = CheckCollisionPointRec( mouse_pos , SCROLL_BAR_ARROW_UP);
+        bool flag_mouse_sel_down = CheckCollisionPointRec( mouse_pos , SCROLL_BAR_ARROW_DOWN);
+
         if(  flag_mouse_sel ){
             color_bg = GRAY;
             color_bg.a = 175;
@@ -340,7 +344,9 @@ void DrawScrollBar( HSMProgram *prog ){
 
         // Setas
         DrawRectangleRec( SCROLL_BAR_ARROW_UP , RAYWHITE );
-        DrawRectangleLinesEx( SCROLL_BAR_ARROW_UP , 3 , (flag_mouse_sel ? GOLD : BLACK) );
+        DrawRectangleLinesEx( SCROLL_BAR_ARROW_UP , 3 , (flag_mouse_sel_up ? GOLD : BLACK) );
+        DrawRectangleRec( SCROLL_BAR_ARROW_DOWN , RAYWHITE );
+        DrawRectangleLinesEx( SCROLL_BAR_ARROW_DOWN , 3 , (flag_mouse_sel_down ? GOLD : BLACK) );
 
 
     }

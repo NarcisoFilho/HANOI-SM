@@ -48,6 +48,8 @@ Vector2 pixelToEditor_col_lin(  HSMProgram *prog , Vector2 pos_pixel = VECm1 ){
 
 void EDITOR::UpdateEditor( HSMProgram *prog ){
     string str_aux;
+    int av_qtd = prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES ) > 7 ? 7 : prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES );
+    int rc_qtd = prog->first_screen > 7 ? 7 : prog->first_screen;
 
     // Control
     if( IsKeyPressed( KEY_DOWN ) ){
@@ -58,11 +60,15 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
 
         current_col = prog->get_program_line( current_lin ).length();
 
+        if( current_lin + 1 > prog->first_screen + EDITOR_QTD_LINES )
+            prog->first_screen += av_qtd;
     }
     if( current_lin > 0 )
         if( IsKeyPressed( KEY_UP ) ){
             current_lin--;
             current_col = prog->get_program_line( current_lin ).length();
+            if( current_lin < prog->first_screen )
+                prog->first_screen -= rc_qtd;
         }
     if( IsKeyPressed( KEY_RIGHT ) )
         if( current_col < prog->get_program_line( current_lin ).length() )
@@ -76,6 +82,9 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         str_aux = prog->get_program_line( current_lin );
         prog->add_line( current_lin );
         current_lin++;
+        if( current_lin > prog->first_screen + EDITOR_QTD_LINES )
+            prog->first_screen += av_qtd;
+
         
         
         // Restore the content of line above
@@ -128,6 +137,8 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
                 prog->remove_line( current_lin ); 
                 current_lin--;
                 current_col = prog->get_program_line( current_lin ).length();
+                if( current_lin < prog->first_screen )
+                    prog->first_screen -= rc_qtd;
 
                 for( int j = 0 ; j < str_aux.length() ; j++ )
                     prog->append_char_prog_line( str_aux[ j ] , current_lin );
@@ -144,6 +155,17 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
                     prog->append_char_prog_line( str_aux[ j ] , current_lin );
             }
     }
+
+    if( CheckCollisionPointRec( GetMousePosition() , SCROLL_BAR_ARROW_DOWN ) )
+        if( IsMouseButtonPressed( MOUSE_LEFT_BUTTON ) )
+            if( prog->first_screen < prog->get_qtd_lines() - EDITOR_QTD_LINES )
+                prog->first_screen++;
+        
+        
+    if( CheckCollisionPointRec( GetMousePosition() , SCROLL_BAR_ARROW_UP ) )
+        if( IsMouseButtonPressed( MOUSE_LEFT_BUTTON ) )
+            if( prog->first_screen > 0 )
+                prog->first_screen--;
 }
 
 void EDITOR::print_editor_content( HSMProgram &prog ){
@@ -186,7 +208,7 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
             DrawText(
                 inst.c_str(),
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT,
-                EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
+                EDITOR_REC_Y + (l - prog.first_screen) * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
                 contain(inst , "##" ) ? EDITOR_HIGHLIGHT_COMMENT : color
             );
@@ -211,14 +233,14 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
             DrawText(
                 inst_e.c_str(),
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT,
-                EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
+                EDITOR_REC_Y + (l - prog.first_screen) * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
                 contain( inst , "push" ) ? EDITOR_HIGHLIGHT_CONTROL_STACK_INSTRUCTION : EDITOR_HIGHLIGHT_CONTROL_EXECUTION_INSTRUCTION
             );
             DrawText(
                 arg.c_str(),
                 EDITOR_REC.x + EDITOR_SPACING_TEXT_LEFT + MeasureText( (inst_e ).c_str() , EDITOR_TEXT_FZ ),
-                EDITOR_REC_Y + l * EDITOR_TEXT_LINE_HEIGHT,
+                EDITOR_REC_Y + (l - prog.first_screen) * EDITOR_TEXT_LINE_HEIGHT,
                 EDITOR_TEXT_FZ,
                 contain( arg , "$R" ) ? EDITOR_HIGHLIGHT_REGISTER : EDITOR_HIGHLIGHT_CONSTANTE
             );

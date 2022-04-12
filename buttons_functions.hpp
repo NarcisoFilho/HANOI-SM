@@ -205,6 +205,8 @@ template< typename T>
 void play_function( HSMProgram *prog , HSM<T> *machine ){
     machine->line_execution = -1;
     machine->flag_execution = true;
+
+    prog->first_screen = 0;
 }
 
 
