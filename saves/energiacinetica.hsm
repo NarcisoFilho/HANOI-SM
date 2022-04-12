@@ -1,0 +1,31 @@
+##Cálculo de Energia cinética levando em conta massa e velocidade. 
+##Massa e velocidade começam no topo da pilha e no fim, o resultado, 
+##contendo o valor da energia cinética encontra-se no topo da pilha
+##VALORES ARBITRÁRIOS ESCOLHIDOS:
+## massa = 4kg, velocidade = 5m/s 
+## saída esperada = Energia Cinética = 50
+
+push 4		
+pop $R2
+## r2 contém a massa
+push 5
+pop $R3		
+## r3 contém a velocidade
+
+push $R3
+push $R3
+mul 
+## $R = v*v = v^2		
+
+push $R
+push $R2
+mul 		
+## $R = m * v^2
+
+push 2
+push $R
+div		
+## $R = m*v^2 / 2 = Energia cinética
+
+push $R
+out 
