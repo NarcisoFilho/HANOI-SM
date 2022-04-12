@@ -17,6 +17,8 @@ class HSMProgram{
     string file_name;
     string *program;
     int qtd_lines;
+    public:
+    int first_screen;
 
     public:
     HSMProgram();
@@ -51,6 +53,8 @@ HSMProgram::HSMProgram(){
     program[ 2 ] = "    ##Write your code here ";
     program[ 3 ] = "    ##or load one file ";
     program[ 4 ] = "    ##Execute it in the green arrow button";
+
+    first_screen = 0;
 }
 
 HSMProgram::HSMProgram( string file_name ){
@@ -71,6 +75,8 @@ HSMProgram::HSMProgram( string file_name ){
         getline( file , program[ i ]  ) ; 
 
     file.close();
+
+    first_screen = 0;
 }
 
 
@@ -82,9 +88,6 @@ HSMProgram::~HSMProgram(){
 void HSMProgram::print(){
     for( int i = 0 ; i < qtd_lines ; i++ )
         cout << program[ i ] << endl;
-
-    
-
 }
 
 int count_file_lines( fstream &file ){

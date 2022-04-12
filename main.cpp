@@ -65,6 +65,7 @@ int main(){
             DrawLoop( loop );
             DrawRegisters( &hsm );
             DrawLineIndicator( &hsm , prog );
+            DrawScrollBar( prog );
 
         EndDrawing();
 

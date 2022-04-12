@@ -323,4 +323,28 @@ void DrawLineIndicator( HSM<T> *hsm , HSMProgram *prog ){
     }
 }
 
+
+void DrawScrollBar( HSMProgram *prog ){
+
+    if( prog->get_qtd_lines() > EDITOR_QTD_LINES ){
+        Color color_bg = SCROLL_BAR_COLOR_BG;
+        bool flag_mouse_sel = CheckCollisionPointRec( GetMousePosition() , SCROLL_BAR_REC_BG);
+        if(  flag_mouse_sel ){
+            color_bg = GRAY;
+            color_bg.a = 175;
+        } 
+
+        DrawRectangleRec( SCROLL_BAR_REC_BG , color_bg );
+
+
+
+        // Setas
+        DrawRectangleRec( SCROLL_BAR_ARROW_UP , RAYWHITE );
+        DrawRectangleLinesEx( SCROLL_BAR_ARROW_UP , 3 , (flag_mouse_sel ? GOLD : BLACK) );
+
+
+    }
+
+}
+
 #endif  // __DRAW_HPP_

@@ -149,8 +149,9 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
 void EDITOR::print_editor_content( HSMProgram &prog ){
     string inst , inst_ws;
     Color color;
+    int last = prog.first_screen + EDITOR_QTD_LINES > prog.get_qtd_lines() ? prog.get_qtd_lines() : prog.first_screen + EDITOR_QTD_LINES;
 
-    for( int l = 0 ; l < prog.get_qtd_lines() ; l++ ){
+    for( int l = prog.first_screen ; l < last ; l++ ){
         inst = prog.get_program_line( l );
         inst_ws = inst;
         inst_ws.erase( remove( inst_ws.begin() , inst_ws.end() , ' ') , inst_ws.end() );
