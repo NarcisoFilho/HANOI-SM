@@ -48,8 +48,8 @@ Vector2 pixelToEditor_col_lin(  HSMProgram *prog , Vector2 pos_pixel = VECm1 ){
 
 void EDITOR::UpdateEditor( HSMProgram *prog ){
     string str_aux;
-    int av_qtd = prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES ) > 7 ? 7 : prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES );
-    int rc_qtd = prog->first_screen > 7 ? 7 : prog->first_screen;
+    int av_qtd = prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES ) > 10 ? 10 : prog->get_qtd_lines() - ( prog->first_screen + EDITOR_QTD_LINES );
+    int rc_qtd = prog->first_screen > 1 ? 1 : prog->first_screen;
 
     // Control
     if( IsKeyPressed( KEY_DOWN ) ){
@@ -77,6 +77,20 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         if( IsKeyPressed( KEY_LEFT ) )
             current_col--;
 
+    if( GetMouseWheelMove() < 0 )
+        if( prog->first_screen < prog->get_qtd_lines() - EDITOR_QTD_LINES / 2 ){
+            prog->first_screen += 2;
+
+        }
+
+    if( GetMouseWheelMove() > 0 )
+        if( prog->first_screen > 0 ){
+            prog->first_screen -= 2;
+            if( prog->first_screen < 0 )
+                prog->first_screen = 0;
+        }
+
+
     if( IsKeyPressed( KEY_ENTER ) ){
         // add line
         str_aux = prog->get_program_line( current_lin );
@@ -85,8 +99,6 @@ void EDITOR::UpdateEditor( HSMProgram *prog ){
         if( current_lin > prog->first_screen + EDITOR_QTD_LINES )
             prog->first_screen += av_qtd;
 
-        
-        
         // Restore the content of line above
         for( int j =  current_col - 1 ; j >= 0 ; j-- ){
             prog->insert_char_prog_line( str_aux[ j ] , 0 , current_lin - 1 );
@@ -270,11 +282,21 @@ void EDITOR::print_editor_content( HSMProgram &prog ){
 }
 
 void EDITOR::DrawEditor( HSMProgram *prog ){
+    const float fz = EDITOR_MARGEM / 2;
 
     DrawRectangleRec( EDITOR_REC , RAYWHITE );
 
     if( prog != NULL )
         this->print_editor_content( *prog );
+
+    for( int i = prog->first_screen ; i < prog->first_screen + EDITOR_QTD_LINES - 1 ; i++ )
+        DrawText( 
+            TextFormat("%d", i ) , 
+            ( EDITOR_MARGEM - MeasureText(TextFormat("%d", i ) , fz ) ) / 2 ,
+            EDITOR_REC_Y + (i - prog->first_screen)*EDITOR_TEXT_LINE_HEIGHT + (EDITOR_TEXT_LINE_HEIGHT - fz ) / 2,
+            fz,
+            RAYWHITE
+        );
 }
 
 

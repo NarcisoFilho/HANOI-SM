@@ -1,7 +1,7 @@
 # HANOI-SM
-A StackMachine with a graphics interface
+A StackMachine with a graphic interface
 
-Integrantes do grupo: Brenda Schussler, Bruno Bonatto, Narciso Filho e Pedro Rigon 
+Integrantes do grupo: Brenda Schussler, Bruno Bonatto, Manoel Narciso Filho e Pedro Rigon 
 
     Programas disponíveis para teste da máquina:
      Cálculo do Enésimo Número Primo;
@@ -9,4 +9,4 @@ Integrantes do grupo: Brenda Schussler, Bruno Bonatto, Narciso Filho e Pedro Rig
      Cálculo de Bhaskara;
      Cálculo da Energia Cinética de um corpo.
     
-    Em ambos os cálculos, a máquina encerra a execução do programa com o(s) resultado(s) no topo da pilha.
+    Em todos os cálculos, a máquina encerra a execução do programa com o(s) resultado(s) no topo da pilha.

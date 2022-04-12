@@ -417,8 +417,12 @@ int HSM<T>::step( HSMProgram *prog ){
                     inst_e.erase( remove( inst_e.begin() , inst_e.end() , ' ' ) , inst_e.end() );
                     arg.erase( remove( arg.begin() , arg.end() , ' ' ) , arg.end() );
                     n = atoi( arg.c_str() );
-                    if( line_execution + n < prog->first_screen || line_execution + n > prog->first_screen + EDITOR_QTD_LINES )
+                    if( line_execution + n < prog->first_screen || line_execution + n > prog->first_screen + EDITOR_QTD_LINES ){
                         prog->first_screen = ( line_execution + n > 3 ? line_execution + n - 2 : line_execution + n );
+                        if( prog->first_screen >= prog->get_qtd_lines() - EDITOR_QTD_LINES / 2 )
+                             prog->first_screen = prog->get_qtd_lines() - EDITOR_QTD_LINES / 2;
+
+                    }
                     // line_execution += n + ( n > 0 ? 1 : -1 );
                     if( contain( str , "jmp" ) )
                         this->jmp( n );
@@ -456,8 +460,11 @@ int HSM<T>::step( HSMProgram *prog ){
                     if( arg2 == "$R")
                         n2 = 0;
 
-                    if( line_execution + n1 < prog->first_screen || line_execution + n1 > prog->first_screen + EDITOR_QTD_LINES )
+                    if( line_execution + n1 < prog->first_screen || line_execution + n1 > prog->first_screen + EDITOR_QTD_LINES ){
                         prog->first_screen = ( line_execution + n1 > 3 ? line_execution + n1 - 2 : line_execution + n1 );
+                        if( prog->first_screen >= prog->get_qtd_lines() - EDITOR_QTD_LINES / 2 )
+                             prog->first_screen = prog->get_qtd_lines() - EDITOR_QTD_LINES / 2;
+                    }
 
                     if( contain( inst_e , "jzr" ) )
                         this->jzr( n1 , n2 );

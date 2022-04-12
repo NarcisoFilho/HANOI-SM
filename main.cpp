@@ -36,7 +36,7 @@ int main(){
     HSMProgram *prog = new HSMProgram;
  
     while( !WindowShouldClose() ){
-        UpdateMouseCursor();
+        UpdateMouseCursor( prog );
         UpdateButton( button_load , &prog );
         UpdateButton( button_save , prog );  
         UpdateButton_Circle( button_play , &prog , &hsm);
@@ -66,6 +66,7 @@ int main(){
             DrawRegisters( &hsm );
             DrawLineIndicator( &hsm , prog );
             DrawScrollBar( prog );
+            DrawCorrectionEditor();
 
         EndDrawing();
 

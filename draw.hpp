@@ -282,6 +282,13 @@ void DrawLineIndicator( HSM<T> *hsm , HSMProgram *prog ){
             // Execution Indicator
         Rectangle rec_ind_exec = EDITOR_REC;
         rec_ind_exec.height = EDITOR_TEXT_LINE_HEIGHT;
+
+        if( hsm->get_line_execution() < prog->first_screen  ||  hsm->get_line_execution() > prog->first_screen + EDITOR_QTD_LINES ){
+            if( hsm->get_line_execution() > 3 )
+                prog->first_screen = hsm->get_line_execution() - 3;
+            else
+                prog->first_screen = hsm->get_line_execution();
+        }
         rec_ind_exec.y += EDITOR_TEXT_LINE_HEIGHT * ( hsm->get_line_execution() - prog->first_screen );
 
         DrawRectangleRec( rec_ind_exec , hsm->flag_error ? LINE_EXECUTION_COLOR_FAILED : LINE_EXECUTION_COLOR_SUCCESS );
@@ -350,6 +357,18 @@ void DrawScrollBar( HSMProgram *prog ){
 
 
     }
+
+}
+
+void DrawCorrectionEditor(){
+    DrawRectangle(
+        EDITOR_REC.x,
+        SCROLL_BAR_ARROW_DOWN.y + SCROLL_BAR_ARROW_DOWN.height,
+        EDITOR_REC.width,
+        EDITOR_TEXT_LINE_HEIGHT / 2,
+        WINDOW_BG_COLOR
+    );
+
 
 }
 

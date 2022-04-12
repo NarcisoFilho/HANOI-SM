@@ -117,8 +117,13 @@ void UpdateStack( int &sfv , bool &f_u , bool &f_d ){
 
 
 
-void UpdateMouseCursor(){
-    if( CheckCollisionPointRec( GetMousePosition() , EDITOR_REC ) )
+void UpdateMouseCursor( HSMProgram *prog ){
+    Rectangle rec = EDITOR_REC;
+
+    if( prog->get_qtd_lines() > EDITOR_QTD_LINES )
+        rec.width -= SCROLL_BAR_WIDTH;
+
+    if( CheckCollisionPointRec( GetMousePosition() , rec ) )
         SetMouseCursor( MOUSE_CURSOR_IBEAM );
     else
         SetMouseCursor( MOUSE_CURSOR_DEFAULT );
