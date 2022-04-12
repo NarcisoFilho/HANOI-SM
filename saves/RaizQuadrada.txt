@@ -1,8 +1,11 @@
-##Raiz quadrada de um número (se nao for exata a resposta é arredondada)
-##trocar pelo número que deseja extrair a raiz na primeira linha
-##teste x=25, saída=5
+## Raiz quadrada de um número 
+## (se nao for exata a resposta é arredondada)
+## trocar pelo número que deseja extrair a raiz 
+## na primeira linha
+## teste x=49, saída=7
 
-push 25
+push 49
+jz 29
 pop $R3
 push $R3
 pop $R4		

@@ -1,7 +1,7 @@
-##Cálculo de Energia cinética levando em conta massa e velocidade. 
-##Massa e velocidade começam no topo da pilha e no fim, o resultado, 
-##contendo o valor da energia cinética encontra-se no topo da pilha
-##VALORES ARBITRÁRIOS ESCOLHIDOS:
+## Cálculo de Energia cinética levando em conta massa e velocidade. 
+## Massa e velocidade começam no topo da pilha e no fim, o resultado, 
+## contendo o valor da energia cinética encontra-se no topo da pilha
+## VALORES ARBITRÁRIOS ESCOLHIDOS:
 ## massa = 4kg, velocidade = 5m/s 
 ## saída esperada = Energia Cinética = 50
 

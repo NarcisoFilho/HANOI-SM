@@ -1,6 +1,6 @@
-##Calcula o enesimo primo
-##Colocar na primeira linha o N desejado
-##Teste: N=3, Saída = 5
+## Calcula o enesimo primo
+## Colocar na primeira linha o N desejado
+## Teste: N=3, Saída = 5
 
 push 3
 pop $R3
