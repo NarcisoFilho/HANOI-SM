@@ -3,7 +3,7 @@ A StackMachine with a graphics interface
 
 Integrantes do grupo: Brenda Schussler, Bruno Bonatto, Narciso Filho e Pedro Rigon 
 
-   Programas disponíveis para teste da máquina:
+    Programas disponíveis para teste da máquina:
      Cálculo do Enésimo Número Primo;
      Cálculo da Raiz Quadrada;
      Cálculo de Bhaskara;
