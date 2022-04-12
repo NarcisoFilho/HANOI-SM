@@ -53,8 +53,6 @@ HSMProgram::HSMProgram(){
     program[ 2 ] = "    ##Write your code here ";
     program[ 3 ] = "    ##or load one file ";
     program[ 4 ] = "    ##Execute it in the green arrow button";
-    program[ 5 ] = "";
-    program[ 6 ] = "    ##Names: Brenda, Narciso e Pedro ";
 
     first_screen = 0;
 }
